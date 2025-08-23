@@ -15,7 +15,7 @@ function Header({ onMenuClick }: HeaderProps) {
   return (
     <AppBar position="static">
       <Toolbar>
-        {/* ✅ Left Menu Button */}
+        {/* Left Menu Button */}
         <IconButton
           edge="start"
           color="inherit"
@@ -26,14 +26,14 @@ function Header({ onMenuClick }: HeaderProps) {
           <MenuIcon />
         </IconButton>
 
-        {/* ✅ Title (Now Clickable) */}
+        {/* Title (Now Clickable) */}
         <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
           <Link to="/" style={{ color: 'inherit', textDecoration: 'none' }}>
             Academic Info System
           </Link>
         </Typography>
 
-        {/* ✅ Navigation Links */}
+        {/* Navigation Links */}
         <Box sx={{ display: 'flex', gap: 2 }}>
           <Link to="/lecturers" style={{ color: 'inherit', textDecoration: 'none' }}>
             Lecturers

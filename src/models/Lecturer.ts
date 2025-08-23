@@ -10,7 +10,7 @@ export interface Lecturer {
   semesters: number[];
 }
 
-// ✅ Permanent lecturers (15 predefined ones)
+// Permanent lecturers (15)
 export const permanentLecturers: Lecturer[] = [
   {
     id: "183483748",

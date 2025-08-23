@@ -5,7 +5,7 @@ import type { Student } from '../models/Student';
 import type { Lecturer } from '../models/Lecturer';
 import { Link } from 'react-router-dom';
 
-// ✅ imports for defaults and storage helpers
+
 import { loadJSON, saveJSON } from '../utils/storage';
 import { generateId } from '../utils/id';
 import { permanentLecturers } from '../models/Lecturer';
@@ -15,7 +15,7 @@ const LECT_KEY = 'lecturers';
 const FILE_KEY = 'files';
 const STUD_KEY = 'students';
 
-// ✅ Default courses (copied from CourseManagement so they load on first Home render too)
+//  Default courses 
 const defaultCourses: Course[] = [
   {
     id: generateId("crs"),
@@ -116,7 +116,7 @@ function Home() {
   const [lecturers, setLecturers] = useState<Lecturer[]>([]);
 
   useEffect(() => {
-    // ✅ Bootstrap defaults if localStorage empty
+    // Bootstrap defaults if localStorage empty
     let savedCourses = loadJSON<Course[]>(COURSE_KEY, []);
     if (savedCourses.length === 0) {
       savedCourses = defaultCourses;

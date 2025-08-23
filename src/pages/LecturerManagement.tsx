@@ -10,7 +10,7 @@ import { useNavigate } from "react-router-dom";
 const LECT_KEY = 'lecturers';
 const COURSE_KEY = 'courses';
 
-// ✅ helper to make 9-digit IDs
+
 function generateLecturerId() {
   return Math.floor(100000000 + Math.random() * 900000000).toString();
 }
@@ -33,7 +33,7 @@ function LecturerManagement() {
     const savedLecturers = loadJSON<Lecturer[]>(LECT_KEY, []);
     const savedCourses = loadJSON<Course[]>(COURSE_KEY, []);
 
-    // Ensure permanent lecturers always have 9-digit IDs
+    
     const normalizedPermanent = permanentLecturers.map(p => ({
       ...p,
       id: p.id.length === 9 ? p.id : generateLecturerId(),
@@ -54,7 +54,7 @@ function LecturerManagement() {
 
   const courseOptions = useMemo(() => courses.map(c => ({ id: c.id, name: c.name })), [courses]);
 
-  // ✅ map and helpers for semesters
+  // map and helpers for semesters
   const courseMapById = useMemo(() => {
     const m = new Map<string, Course>();
     courses.forEach(c => m.set(c.id, c));
@@ -71,7 +71,7 @@ function LecturerManagement() {
     return Array.from(sems).sort((a, b) => a - b);
   }, [courses]);
 
-  // Semesters allowed by currently selected courses in the form (fallback to all if none selected)
+  // Semesters allowed by currently selected courses 
   const allowedSemestersForForm = useMemo(() => {
     if (selectedCourses.length === 0) return allSemesterOptions;
     const sems = new Set<number>();
@@ -83,7 +83,7 @@ function LecturerManagement() {
     return Array.from(sems).sort((a, b) => a - b);
   }, [selectedCourses, allSemesterOptions, courseMapById]);
 
-  // Helper: semesters allowed for a particular lecturer’s selected courses
+  // semesters allowed for a particular lecturer’s selected courses
   const getSemestersForCourses = (courseIds: string[]) => {
     if (!courseIds || courseIds.length === 0) return allSemesterOptions;
     const sems = new Set<number>();
@@ -100,7 +100,7 @@ function LecturerManagement() {
     setEmail('');
     setSelectedCourses([]);
     setSemestersText('');
-    setCustomId(''); // <-- Added reset for manual ID
+    setCustomId(''); // Added reset for manual ID
   };
 
   const saveAll = (lects: Lecturer[], crs: Course[]) => {
@@ -122,7 +122,7 @@ function LecturerManagement() {
         if (courses.length > 1 && Math.random() > 0.5) set.add(pick(courses));
         cidList = Array.from(set);
       }
-      // ✅ semesters derived from selected courses (NOT random)
+      // semesters derived from selected courses (NOT random)
       const semSet = new Set<number>();
       cidList.forEach(id => {
         const c = courseMapById.get(id);
@@ -132,7 +132,7 @@ function LecturerManagement() {
       sems = Array.from(semSet).sort((a, b) => a - b);
     } else {
       cidList = selectedCourses;
-      // ✅ only keep semesters that are allowed by the selected courses
+      // only keep semesters that are allowed by the selected courses
       const allowed = new Set<number>(allowedSemestersForForm);
       sems = semestersText
         .split(',')
@@ -144,14 +144,14 @@ function LecturerManagement() {
     if (!isValidEmail(lemail)) { alert('Invalid email.'); return; }
 
     const newLect: Lecturer = {
-      id: customId.trim() !== '' ? customId.trim() : generateLecturerId(),  // <-- Use manual ID if provided
+      id: customId.trim() !== '' ? customId.trim() : generateLecturerId(),  // Use manual ID if provided
       name: lname,
       email: lemail,
       courses: cidList,
       semesters: sems,
     };
 
-    // ✅ update courses with lecturerId (keep your original single-lecturer-per-course field)
+    // update courses with lecturerId 
     const updatedCourses: Course[] = courses.map(c =>
       cidList.includes(c.id)
         ? { ...c, lecturerId: newLect.id }
@@ -176,7 +176,7 @@ function LecturerManagement() {
     saveAll(updatedLecturers, updatedCourses);
   };
 
-  // ✅ editing also updates course assignments + keeps semesters valid
+  // editing also updates course assignments + keeps semesters valid
   const editLecturerField = (id: string, field: keyof Lecturer, value: any) => {
     let updatedLecturers = lecturers.map(l =>
       l.id === id
@@ -188,7 +188,7 @@ function LecturerManagement() {
 
     if (field === "courses") {
       const newCourses: string[] = value;
-      // keep course ↔ lecturer links (single lecturerId field as in your original code)
+      
       updatedCourses = courses.map(c => {
         if (newCourses.includes(c.id)) {
           return { ...c, lecturerId: id };
@@ -198,7 +198,7 @@ function LecturerManagement() {
         return c;
       });
 
-      // ✅ auto-update semesters from selected courses (unique + sorted)
+      // auto-update semesters from selected courses
       const courseSemesters = getSemestersForCourses(newCourses);
       updatedLecturers = updatedLecturers.map(l =>
         l.id === id ? { ...l, semesters: courseSemesters } : l
@@ -206,7 +206,7 @@ function LecturerManagement() {
     }
 
     if (field === "semesters") {
-      // ✅ ensure semesters stay within allowed set for this lecturer’s courses
+      //ensure semesters stay within allowed set for this lecturer courses
       const current = lecturers.find(l => l.id === id);
       const allowed = getSemestersForCourses(current ? current.courses : []);
       const allowedSet = new Set<number>(allowed);
@@ -219,7 +219,7 @@ function LecturerManagement() {
     saveAll(updatedLecturers, updatedCourses);
   };
 
-  // ✅ helper used by both add-form and edit-row checkboxes to keep semestersText valid
+  // row checkboxes to keep semestersText valid
   const filterSemestersTextToAllowed = (allowedNums: number[]) => {
     const current = semestersText.split(',').map(s => s.trim()).filter(Boolean);
     const allowedSet = new Set(allowedNums.map(n => String(n)));
@@ -233,7 +233,7 @@ function LecturerManagement() {
     <div style={{ padding: "20px", maxWidth: "1000px", margin: "0 auto" }}>
       <h2 style={{ textAlign: "center", marginBottom: "20px" }}>👨‍🏫 Lecturer Management</h2>
 
-      {/* ✅ Quick overview list at the top */}
+      {/*Quick overview list at the top */}
       <div style={{
         padding: "10px 15px",
         background: "#f9f9f9",
@@ -268,7 +268,7 @@ function LecturerManagement() {
         )}
       </div>
 
-      {/* ✅ Form section */}
+      {/* Form section */}
       <div style={{
         background: "#fff",
         padding: "15px",
@@ -284,7 +284,7 @@ function LecturerManagement() {
           <input placeholder="Email *" value={email} onChange={e => setEmail(e.target.value)} />
         </div>
 
-        {/* ▼▼▼ CHANGED: courses selection to checkboxes (add form) ▼▼▼ */}
+        {/*  courses selection to checkboxes (add form) */}
         <div className="form-row" style={{ marginBottom: "10px", display: "flex", gap: "10px" }}>
           <div
             style={{
@@ -307,7 +307,7 @@ function LecturerManagement() {
                       ? [...selectedCourses, c.id]
                       : selectedCourses.filter(id => id !== c.id);
                     setSelectedCourses(next);
-                    // keep semestersText within allowed values (same behavior you had)
+                    // keep semestersText within allowed values
                     const allowed = (() => {
                       if (next.length === 0) return allSemesterOptions;
                       const sems = new Set<number>();
@@ -326,7 +326,7 @@ function LecturerManagement() {
             ))}
           </div>
 
-          {/* semesters select stays as-is */}
+          {/* semesters select stays as is */}
           <select
             multiple
             value={semestersText.split(',').map(s => s.trim()).filter(Boolean)}
@@ -342,7 +342,7 @@ function LecturerManagement() {
             ))}
           </select>
         </div>
-        {/* ▲▲▲ END change (add form) ▲▲▲ */}
+        {/* END change (add form)  */}
 
         <div className="actions" style={{ display: "flex", gap: "10px" }}>
           <button onClick={() => addLecturer(false)} style={{ padding: "6px 12px" }}>Add Lecturer</button>
@@ -350,7 +350,7 @@ function LecturerManagement() {
         </div>
       </div>
 
-      {/* ✅ Table section */}
+      {/*  Table section */}
       <table style={{ width: "100%", borderCollapse: "collapse", background: "#fff", borderRadius: "8px", overflow: "hidden", boxShadow: "0 2px 6px rgba(0,0,0,0.1)" }}>
         <thead style={{ background: "#f0f0f0" }}>
           <tr>
@@ -387,7 +387,7 @@ function LecturerManagement() {
                 </td>
                 <td style={{ padding: "6px", border: "1px solid #ddd" }}>
                   {isEditing ? (
-                    // ▼▼▼ CHANGED: courses selection to checkboxes (edit row) ▼▼▼
+                    // CHANGED: courses selection to checkboxes 
                     <div style={{ padding: 6, border: "1px solid #ddd", borderRadius: 6, maxHeight: 140, overflow: "auto" }}>
                       {courseOptions.map(c => (
                         <label key={c.id} style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 4 }}>
@@ -406,7 +406,7 @@ function LecturerManagement() {
                         </label>
                       ))}
                     </div>
-                    // ▲▲▲ END change (edit row) ▲▲▲
+                    // END change (edit row) 
                   ) : (
                     l.courses.map(cid => {
                       const course = courses.find(c => c.id === cid);

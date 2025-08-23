@@ -24,7 +24,7 @@ function CourseManagement() {
   const [editingId, setEditingId] = useState<string | null>(null);
 
   useEffect(() => {
-    // ✅ Just load data (Home.tsx already seeded defaults if empty)
+    // Just load data (Home.tsx already seeded defaults if empty)
     const savedCourses = loadJSON<Course[]>(COURSE_KEY, []);
     setCourses(savedCourses);
 

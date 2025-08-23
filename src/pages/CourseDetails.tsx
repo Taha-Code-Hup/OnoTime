@@ -6,7 +6,7 @@ import type { Lecturer } from '../models/Lecturer';
 import type { Student } from '../models/Student';
 import type { StudyFile } from '../models/StudyFile';
 
-// Safe JSON loader with typing
+// JSON loader with typing
 function loadJSON<T>(key: string, fallback: T): T {
   try {
     const raw = localStorage.getItem(key);
@@ -59,7 +59,7 @@ function CourseDetails() {
     return allLecturers.find(l => l.id === course.lecturerId) || null;
   }, [course, allLecturers]);
 
-  // Resolve students (support either linkage style: Student.courseIds or Course.studentIds)
+  // Resolve students 
   const courseStudents: Student[] = useMemo(() => {
     if (!course) return [];
     const viaStudentCourseIds = allStudents.filter(s => Array.isArray(s.courseIds) && s.courseIds.includes(course.id));
@@ -75,7 +75,7 @@ function CourseDetails() {
     return allFiles.filter(f => f.courseId === course.id);
   }, [course, allFiles]);
 
-  // 🔧 Helper: show only the last numeric part of uploaderId when unknown
+  // Helper
   const extractNumericTail = (raw: string): string => {
     if (!raw || raw.trim() === '') return 'לא ידוע';
     const parts = raw.split('_');
@@ -89,7 +89,7 @@ function CourseDetails() {
     if (s) return s.fullName;
     const l = allLecturers.find(le => le.id === uploaderId);
     if (l) return l.name;
-    // ✅ Fallback: show only the trailing numeric part (e.g., 125331637)
+    // 
     return extractNumericTail(uploaderId);
   };
 

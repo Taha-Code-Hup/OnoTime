@@ -17,13 +17,13 @@ function App() {
 
   return (
     <div>
-      {/* ✅ Header with navigation links */}
+      {/* Header with navigation links */}
       <Header onMenuClick={() => setDrawerOpen(true)} />
 
-      {/* ✅ SideMenu stays the same */}
+      
       <SideMenu open={drawerOpen} onClose={() => setDrawerOpen(false)} />
 
-      {/* ✅ Routed Pages */}
+      {/* Routed Pages */}
       <main style={{ padding: '1rem', minHeight: '70vh' }}>
         <Routes>
           <Route path="/" element={<Home />} />
@@ -36,7 +36,7 @@ function App() {
         </Routes>
       </main>
 
-      {/* ✅ Keep your footer */}
+      
       <Footer />
     </div>
   );

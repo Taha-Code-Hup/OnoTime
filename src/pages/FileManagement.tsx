@@ -89,7 +89,7 @@ function FileManagement() {
       fileUrl: furl,
       courseId: cid,
       status: fstatus,
-      uploaderId: uid, // already stored
+      uploaderId: uid, 
     };
 
     const updated = [...files, newFile];
@@ -115,7 +115,7 @@ function FileManagement() {
     saveJSON(FILE_KEY, updated);
   };
 
-  // 🔧 Helper: show only the trailing numeric part for display (e.g., uploader_..._125331637 -> 125331637)
+  
   const formatUploaderId = (raw: string): string => {
     if (!raw || raw.trim() === '') return '-';
     const parts = raw.split('_');
