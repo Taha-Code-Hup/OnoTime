@@ -1,3 +1,4 @@
+// src/pages/LecturerManagement.tsx
 import React, { useEffect, useMemo, useState } from 'react';
 import type { Lecturer } from "../models/Lecturer";   // type-only import
 import { permanentLecturers } from "../models/Lecturer"; // value import
@@ -256,11 +257,23 @@ function LecturerManagement() {
                     marginBottom: "6px",
                     border: `2px solid ${isPermanent ? "red" : "blue"}`,
                     borderRadius: "6px",
-                    background: "#fff"
+                    background: "#fff",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between"
                   }}
                 >
-                  <strong>{l.name}</strong> — <span style={{ color: "#555" }}>{l.email}</span>
-                  {isPermanent && <span style={{ marginLeft: "8px", color: "red", fontSize: "0.9em" }}>(Permanent)</span>}
+                  <div>
+                    <strong>{l.name}</strong> — <span style={{ color: "#555" }}>{l.email}</span>
+                    {isPermanent && <span style={{ marginLeft: "8px", color: "red", fontSize: "0.9em" }}>(Permanent)</span>}
+                  </div>
+
+                  {/* ADD: quick More info button in the top list */}
+                  <div>
+                    <button onClick={() => navigate(`/lecturers/${encodeURIComponent(l.id)}`)} style={{ marginLeft: 8 }}>
+                      פרטים
+                    </button>
+                  </div>
                 </li>
               );
             })}
@@ -443,6 +456,12 @@ function LecturerManagement() {
                   ) : (
                     <>
                       <button onClick={() => setEditingId(l.id)}>Edit</button>
+
+                      {/* NEW: More info button (navigates to detail page) */}
+                      <button onClick={() => navigate(`/lecturers/${encodeURIComponent(l.id)}`)} style={{ marginLeft: 6 }}>
+                        פרטים
+                      </button>
+
                       <button onClick={() => deleteLecturer(l.id)} style={{ marginLeft: 6 }}>Delete</button>
                     </>
                   )}

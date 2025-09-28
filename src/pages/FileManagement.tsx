@@ -89,7 +89,8 @@ function FileManagement() {
       fileUrl: furl,
       courseId: cid,
       status: fstatus,
-      uploaderId: uid, 
+      uploaderId: uid,
+      views: 0
     };
 
     const updated = [...files, newFile];

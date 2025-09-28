@@ -5,7 +5,8 @@ import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 import Divider from '@mui/material/Divider';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { getCurrentUser, removeCurrentUser } from '../utils/storage';
 
 type SideMenuProps = {
   open: boolean;
@@ -13,15 +14,25 @@ type SideMenuProps = {
 };
 
 function SideMenu({ open, onClose }: SideMenuProps) {
+  const navigate = useNavigate();
+  const user = getCurrentUser();
+
+  function handleLogout() {
+    removeCurrentUser();
+    onClose();
+    navigate('/login');
+  }
+
   return (
     <Drawer anchor="left" open={open} onClose={onClose}>
       <List sx={{ width: 260 }}>
         <ListItem disablePadding>
-          <ListItemButton component={Link} to="/" onClick={onClose}>
+          <ListItemButton component={Link} to="/home" onClick={onClose}>
             <ListItemText primary="Home" />
           </ListItemButton>
         </ListItem>
         <Divider />
+
         <ListItem disablePadding>
           <ListItemButton component={Link} to="/students" onClick={onClose}>
             <ListItemText primary="Students" />
@@ -42,12 +53,47 @@ function SideMenu({ open, onClose }: SideMenuProps) {
             <ListItemText primary="Lecturers" />
           </ListItemButton>
         </ListItem>
+
         <Divider />
+
         <ListItem disablePadding>
           <ListItemButton component={Link} to="/help" onClick={onClose}>
             <ListItemText primary="Help" />
           </ListItemButton>
         </ListItem>
+
+        <Divider />
+        
+        <ListItem disablePadding>
+          <ListItemButton component={Link} to="/all-lecturers" onClick={onClose}>
+            <ListItemText primary="Our Staff" />
+          </ListItemButton>
+        </ListItem>
+
+        <Divider />
+                <ListItem disablePadding>
+          <ListItemButton component={Link} to="/popular" onClick={onClose}>
+            <ListItemText primary="Popular" />
+          </ListItemButton>
+        </ListItem>
+
+        <Divider />
+        
+
+        {/* Conditional Login / Logout */}
+        {!user ? (
+          <ListItem disablePadding>
+            <ListItemButton onClick={() => { onClose(); navigate('/login'); }}>
+              <ListItemText primary="Login" />
+            </ListItemButton>
+          </ListItem>
+        ) : (
+          <ListItem disablePadding>
+            <ListItemButton onClick={handleLogout}>
+              <ListItemText primary="Logout" />
+            </ListItemButton>
+          </ListItem>
+        )}
       </List>
     </Drawer>
   );

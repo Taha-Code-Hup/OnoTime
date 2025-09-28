@@ -4,11 +4,11 @@ import type { StudyFile } from '../models/StudyFile';
 import type { Student } from '../models/Student';
 import type { Lecturer } from '../models/Lecturer';
 import { Link } from 'react-router-dom';
-
-
+import { useNavigate } from 'react-router-dom';
 import { loadJSON, saveJSON } from '../utils/storage';
 import { generateId } from '../utils/id';
 import { permanentLecturers } from '../models/Lecturer';
+import { readKey, writeKey } from '../firestore/localStorageAdapter';
 
 const COURSE_KEY = 'courses';
 const LECT_KEY = 'lecturers';
@@ -25,6 +25,7 @@ const defaultCourses: Course[] = [
     lecturerId: "",
     studentIds: [],
     semester: 1,
+    views: 0,
   },
   {
     id: generateId("crs"),
@@ -34,6 +35,7 @@ const defaultCourses: Course[] = [
     lecturerId: "",
     studentIds: [],
     semester: 2,
+    views: 0,
   },
   {
     id: generateId("crs"),
@@ -43,6 +45,7 @@ const defaultCourses: Course[] = [
     lecturerId: "",
     studentIds: [],
     semester: 3,
+    views: 0,
   },
   {
     id: generateId("crs"),
@@ -52,6 +55,7 @@ const defaultCourses: Course[] = [
     lecturerId: "",
     studentIds: [],
     semester: 4,
+    views: 0,
   },
   {
     id: generateId("crs"),
@@ -61,6 +65,7 @@ const defaultCourses: Course[] = [
     lecturerId: "",
     studentIds: [],
     semester: 2,
+    views: 0,
   },
   {
     id: generateId("crs"),
@@ -70,6 +75,7 @@ const defaultCourses: Course[] = [
     lecturerId: "",
     studentIds: [],
     semester: 3,
+    views: 0,
   },
   {
     id: generateId("crs"),
@@ -79,6 +85,7 @@ const defaultCourses: Course[] = [
     lecturerId: "",
     studentIds: [],
     semester: 4,
+    views: 0,
   },
   {
     id: generateId("crs"),
@@ -88,6 +95,7 @@ const defaultCourses: Course[] = [
     lecturerId: "",
     studentIds: [],
     semester: 3,
+    views: 0,
   },
   {
     id: generateId("crs"),
@@ -97,6 +105,7 @@ const defaultCourses: Course[] = [
     lecturerId: "",
     studentIds: [],
     semester: 4,
+    views: 0,
   },
   {
     id: generateId("crs"),
@@ -106,6 +115,7 @@ const defaultCourses: Course[] = [
     lecturerId: "",
     studentIds: [],
     semester: 3,
+    views: 0,
   },
 ];
 
@@ -138,6 +148,7 @@ function Home() {
     setLecturers(savedLecturers);
   }, []);
 
+  const navigate = useNavigate();
   return (
     <div style={{
       background: 'linear-gradient(to bottom right, #3f87a6, #ebf8e1)',
@@ -155,6 +166,61 @@ function Home() {
         <h1>🎓 ברוכים הבאים למכללה האקדמית</h1>
         <p>המערכת לניהול קורסים, מרצים, סטודנטים וחומרי לימוד</p>
       </header>
+      <div style={{ textAlign: 'center', marginTop: '2rem' }}>
+  <h2 style={{ marginBottom: '0.5rem', fontWeight: 'normal' }}>
+    רוצים להכיר את המרצים שלנו מקרוב
+  </h2>
+  <p style={{ marginBottom: '1.5rem', fontSize: '1rem', color: '#444' }}>
+    לכל מרצה יש עמוד אישי המציג את תחומי ההתמחות, ההכשרות והניסיון שלו
+  </p>
+  <button
+    onClick={() => navigate('/all-lecturers')}
+    style={{
+      padding: '12px 20px',
+      borderRadius: '8px',
+      background: '#00bfa5',
+      color: 'white',
+      border: 'none',
+      cursor: 'pointer',
+      fontSize: '1rem',
+      fontWeight: 600,
+      transition: 'background 0.3s ease'
+    }}
+    onMouseOver={(e) => (e.currentTarget.style.background = '#009e86')}
+    onMouseOut={(e) => (e.currentTarget.style.background = '#00bfa5')}
+  >
+    צפה בכל המרצים
+  </button>
+</div>
+
+<div style={{ textAlign: 'center', marginTop: '2rem' }}>
+  <h2 style={{ fontSize: '1.2rem', marginBottom: '0.5rem', fontWeight: 'normal' }}>
+    📈 הקורסים והקבצים הפופולריים ביותר לסטודנטים שלנו
+  </h2>
+  <p style={{ fontSize: '1rem', color: '#444', marginBottom: '1rem' }}>
+    רוצים לראות אילו קורסים וקבצים הכי נצפו? לחצו כאן
+  </p>
+  <Link to="/popular">
+    <button
+      style={{
+        padding: '12px 24px',
+        borderRadius: '8px',
+        background: '#ff8c00',
+        color: 'white',
+        fontSize: '1rem',
+        fontWeight: 600,
+        border: 'none',
+        cursor: 'pointer',
+        transition: 'background 0.3s ease',
+      }}
+      onMouseOver={(e) => (e.currentTarget.style.background = '#e07b00')}
+      onMouseOut={(e) => (e.currentTarget.style.background = '#ff8c00')}
+    >
+      צפו בקורסים וקבצים פופולריים
+    </button>
+  </Link>
+</div>
+
 
       <h2 style={{ textAlign: 'center' }}>📚 קורסים זמינים</h2>
       {courses.length === 0 && (

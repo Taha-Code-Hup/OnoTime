@@ -84,6 +84,7 @@ function CourseManagement() {
       lecturerId: lid || '',
       studentIds: [],
       semester: sem,
+      views: 0
     };
 
     const updatedCourses = [...courses, newCourse];

@@ -1,4 +1,6 @@
-import React, { useEffect, useMemo, useState } from 'react'; 
+import React, { useEffect, useMemo, useState, useRef } from 'react';
+import { readKey, writeKey } from '../firestore/localStorageAdapter';
+
 import { useParams, Link } from 'react-router-dom';
 
 import type { Course } from '../models/Course';
@@ -17,6 +19,14 @@ function loadJSON<T>(key: string, fallback: T): T {
     return fallback;
   }
 }
+function saveJSON<T>(key: string, data: T) {
+  try {
+    localStorage.setItem(key, JSON.stringify(data));
+  } catch {
+    // ignore
+  }
+}
+
 
 const card: React.CSSProperties = {
   background: 'white',
@@ -59,7 +69,67 @@ function CourseDetails() {
     return allLecturers.find(l => l.id === course.lecturerId) || null;
   }, [course, allLecturers]);
 
-  // Resolve students 
+  // Ref to ensure we increment views only once per mount
+const incrementedRef = useRef(false);
+
+// Increment course views when this page is opened
+useEffect(() => {
+  if (!course || incrementedRef.current) return;
+  try {
+    const stored = loadJSON<Course[]>('courses', []);
+    const updated = stored.map(c => {
+      if (String(c.id) === String(course.id)) {
+        const current = Number(c.views || 0);
+        return { ...c, views: current + 1 };
+      }
+      return c;
+    });
+    saveJSON('courses', updated);
+    setAllCourses(updated);
+    incrementedRef.current = true;
+  } catch (err) {
+    console.warn('Failed to increment course views', err);
+  }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+}, [course]);
+
+// Increment file views (for global files and inline course files)
+function incrementFileViews(fileId?: string, courseId?: string) {
+  try {
+    // update global files
+    const gFiles = loadJSON<StudyFile[]>('files', []);
+    const gfUpdated = (gFiles || []).map(f => {
+      if (fileId && String(f.id) === String(fileId)) {
+        return { ...f, views: (Number(f.views || 0) + 1) };
+      }
+      return f;
+    });
+    saveJSON('files', gfUpdated);
+    setAllFiles(gfUpdated);
+
+    // update inline files within courses
+    const storedCourses = loadJSON<Course[]>('courses', []);
+    const coursesUpdated = (storedCourses || []).map(c => {
+      if (String(c.id) === String(courseId)) {
+        if (!Array.isArray(c.files)) return c;
+        const newFiles = c.files.map(f => {
+          if (fileId && String(f.id) === String(fileId)) {
+            return { ...f, views: (Number(f.views || 0) + 1) };
+          }
+          return f;
+        });
+        return { ...c, files: newFiles };
+      }
+      return c;
+    });
+    saveJSON('courses', coursesUpdated);
+    setAllCourses(coursesUpdated);
+  } catch (err) {
+    console.warn('Failed to increment file views', err);
+  }
+}
+
+// Resolve students
   const courseStudents: Student[] = useMemo(() => {
     if (!course) return [];
     const viaStudentCourseIds = allStudents.filter(s => Array.isArray(s.courseIds) && s.courseIds.includes(course.id));
@@ -100,9 +170,9 @@ function CourseDetails() {
   if (!course) {
     return (
       <div style={{ padding: '2rem' }}>
-        <Link to="/" style={{ textDecoration: 'none' }}>⬅ חזרה</Link>
+        <Link to="/home" style={{ textDecoration: 'none' }}>⬅ חזרה לעמוד הבית</Link>
         <h2 style={{ marginTop: '1rem' }}>הקורס לא נמצא</h2>
-        <p>וודא שהקורס קיים ב־localStorage ושהנתיב הוא ‎/courses/{id}‎.</p>
+        <p> make sure it is valid file with url</p>
       </div>
     );
   }
@@ -117,7 +187,7 @@ function CourseDetails() {
     >
       <div style={{ maxWidth: 1100, margin: '0 auto' }}>
         <div style={{ marginBottom: '1rem' }}>
-          <Link to="/" style={{ textDecoration: 'none' }}>⬅ חזרה לדף הבית</Link>
+          <Link to="/home" style={{ textDecoration: 'none' }}>⬅ חזרה לדף הבית</Link>
         </div>
 
         {/* Course header */}
@@ -199,9 +269,15 @@ function CourseDetails() {
                   </div>
                   {file.fileUrl && (
                     <div style={{ marginTop: 4 }}>
-                      <a href={file.fileUrl} target="_blank" rel="noreferrer">
-                        פתח קובץ
-                      </a>
+                      <a
+                     href={file.fileUrl}
+                   target="_blank"
+                   rel="noreferrer"
+                  onClick={() => incrementFileViews(file.id, course?.id)}
+                   >
+                   פתח קובץ
+                   </a>
+
                     </div>
                   )}
                 </li>
