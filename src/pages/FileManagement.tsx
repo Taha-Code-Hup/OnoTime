@@ -240,7 +240,7 @@ function FileManagement() {
         <Button 
           variant="contained" 
           color="primary" 
-          onClick={() => navigate("/")}
+          onClick={() => navigate("/home")}
         >
           חזרה לעמוד הבית
         </Button>

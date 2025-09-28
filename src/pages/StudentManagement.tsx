@@ -378,7 +378,7 @@ export default function StudentManagement(): JSX.Element {
         <div className="header-inner">
           <h2>Student Management</h2>
           <nav>
-            <Button variant="contained" color="primary" onClick={() => navigate('/')}>חזרה לעמוד הבית</Button>
+            <Button variant="contained" color="primary" onClick={() => navigate("/home")}>חזרה לעמוד הבית</Button>
           </nav>
         </div>
       </header>
